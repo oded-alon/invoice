@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Dark mode base overrides ───────────────────────────────────
+   Placed in @layer base so Tailwind dark: utilities always win.   */
+@layer base {
+  :root { color-scheme: light; }
+  .dark { color-scheme: dark; }
+
+  .dark body {
+    background: #020617;
+    color: #e2e8f0;
+  }
+
+  /* Inputs */
+  .dark .input {
+    background: #1e293b;
+    border-color: #334155;
+    color: #e2e8f0;
+  }
+  .dark .input:focus {
+    border-color: #94a3b8;
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
+  }
+  .dark .input::placeholder { color: #475569; }
+  .dark select option { background: #1e293b; color: #e2e8f0; }
+
+  /* Text */
+  .dark .text-slate-900 { color: #e2e8f0; }
+  .dark .text-slate-700 { color: #cbd5e1; }
+  .dark .text-slate-600 { color: #94a3b8; }
+  .dark .text-slate-500 { color: #64748b; }
+
+  /* Backgrounds */
+  .dark .bg-white  { background-color: #1e293b; }
+  .dark .bg-slate-50 { background-color: #1e293b; }
+
+  /* Borders */
+  .dark .border-slate-200 { border-color: #334155; }
+  .dark .border-slate-300 { border-color: #475569; }
+  .dark .border-slate-900 { border-color: #e2e8f0; }
+
+  /* Hover overrides */
+  .dark .hover\:bg-slate-50:hover  { background-color: #334155; }
+  .dark .hover\:bg-slate-100:hover { background-color: #334155; }
+  .dark .hover\:bg-slate-200:hover { background-color: #475569; }
+  .dark .hover\:text-slate-900:hover { color: #e2e8f0; }
+
+  /* Status badges */
+  .dark .bg-amber-100   { background-color: #451a03; }
+  .dark .text-amber-700 { color: #fbbf24; }
+  .dark .bg-emerald-100   { background-color: #022c22; }
+  .dark .text-emerald-700 { color: #34d399; }
+  .dark .bg-red-100   { background-color: #450a0a; }
+  .dark .text-red-700 { color: #f87171; }
+
+  /* Rose error banners */
+  .dark .bg-rose-50      { background-color: #1c0a0a; }
+  .dark .text-rose-700   { color: #fb7185; }
+  .dark .border-rose-200 { border-color: #9f1239; }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  direction: rtl;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 14px;
+  background: #f8fafc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input[type="date"] {
+  direction: ltr;
+  text-align: right;
+}
+
+.ltr-text {
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline;
+}
+
+.input {
+  width: 100%;
+  border-radius: 0.7rem;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.input:focus {
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+}

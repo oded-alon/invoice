@@ -1,0 +1,235 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BusinessTaxProfile {
+  PTUR
+  MURSHE
+}
+
+enum CustomerType {
+  PRIVATE
+  COMPANY
+}
+
+enum DocumentType {
+  TAX_INVOICE
+  INVOICE_RECEIPT
+  RECEIPT
+  CREDIT_NOTE
+  RETURN_NOTE
+  PROFORMA
+}
+
+enum DocumentStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CREDIT
+  CHECK
+  CASH
+  BANK_TRANSFER
+  PAYMENT_APP
+  OTHER
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  ISSUE
+  CANCEL
+  LOGIN
+}
+
+model User {
+  id             String      @id @default(uuid())
+  email          String      @unique
+  passwordHash   String
+  displayName    String
+  isActive       Boolean     @default(true)
+  businesses     Business[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  auditLogs      AuditLog[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model Business {
+  id             String              @id @default(uuid())
+  ownerUserId    String
+  owner          User                @relation(fields: [ownerUserId], references: [id])
+  nameHe         String
+  detailsHe      String?
+  taxId          String              @unique
+  taxProfile     BusinessTaxProfile
+  vatRegistered  Boolean             @default(false)
+  defaultCurrency String             @default("ILS")
+  addressHe      String?
+  phone          String?
+  email          String?
+  logoUrl        String?
+  printTemplate  Json?
+  isActive       Boolean             @default(true)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  customers      Customer[]
+  invoices       Invoice[]
+  sequences      DocumentSequence[]
+  auditLogs      AuditLog[]
+  expenses       Expense[]
+
+  @@index([ownerUserId])
+}
+
+model Customer {
+  id              String       @id @default(uuid())
+  businessId      String
+  business        Business     @relation(fields: [businessId], references: [id])
+  type            CustomerType @default(PRIVATE)
+  displayNameHe   String
+  legalNameHe     String?
+  taxId           String?
+  email           String?
+  phone           String?
+  addressHe       String?
+  cityHe          String?
+  postalCode      String?
+  paymentTermsDays Int         @default(0)
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  invoices        Invoice[]
+
+  @@index([businessId, displayNameHe])
+  @@unique([businessId, taxId])
+}
+
+model DocumentSequence {
+  id             String       @id @default(uuid())
+  businessId     String
+  business       Business     @relation(fields: [businessId], references: [id])
+  documentType   DocumentType
+  fiscalYear     Int
+  nextNumber     Int          @default(1)
+  prefix         String       @default("")
+  startingNumber Int          @default(1)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([businessId, documentType, fiscalYear])
+}
+
+model Invoice {
+  id             String         @id @default(uuid())
+  businessId     String
+  business       Business       @relation(fields: [businessId], references: [id])
+  customerId     String
+  customer       Customer       @relation(fields: [customerId], references: [id])
+  documentType   DocumentType
+  status         DocumentStatus @default(DRAFT)
+  fiscalYear     Int
+  seriesCode     String?
+  sequenceNumber Int?
+  issueDate      DateTime
+  dueDate        DateTime?
+  currency       String         @default("ILS")
+  paymentMethod  PaymentMethod?
+  paymentDetails Json?
+  exchangeRate   Decimal?       @db.Decimal(10, 6)
+  subtotalAmount Decimal        @db.Decimal(12, 2)
+  discountAmount Decimal        @default(0) @db.Decimal(12, 2)
+  vatAmount      Decimal        @default(0) @db.Decimal(12, 2)
+  totalAmount    Decimal        @db.Decimal(12, 2)
+  paidAmount     Decimal        @default(0) @db.Decimal(12, 2)
+  balanceDue     Decimal        @db.Decimal(12, 2)
+  notesHe        String?
+  linkedDocumentId String?
+  linkedDocument Invoice?       @relation("LinkedInvoice", fields: [linkedDocumentId], references: [id])
+  children       Invoice[]      @relation("LinkedInvoice")
+  issuedAt       DateTime?
+  cancelledAt    DateTime?
+  hashPrev       String?
+  hashSelf       String?
+  createdByUserId String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  lines          InvoiceLine[]
+
+  @@index([businessId, customerId])
+  @@unique([businessId, documentType, fiscalYear, sequenceNumber])
+}
+
+model InvoiceLine {
+  id             String    @id @default(uuid())
+  invoiceId      String
+  invoice        Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  lineNo         Int
+  descriptionHe  String
+  quantity       Decimal   @db.Decimal(12, 3)
+  unitPrice      Decimal   @db.Decimal(12, 2)
+  discountPct    Decimal   @default(0) @db.Decimal(5, 2)
+  lineSubtotal   Decimal   @db.Decimal(12, 2)
+  vatRate        Decimal   @default(0) @db.Decimal(5, 2)
+  lineVatAmount  Decimal   @default(0) @db.Decimal(12, 2)
+  lineTotal      Decimal   @db.Decimal(12, 2)
+  createdAt      DateTime  @default(now())
+
+  @@unique([invoiceId, lineNo])
+}
+
+model AuditLog {
+  id            String      @id @default(uuid())
+  businessId    String
+  business      Business    @relation(fields: [businessId], references: [id])
+  actorUserId   String
+  actorUser     User        @relation(fields: [actorUserId], references: [id])
+  entityType    String
+  entityId      String
+  action        AuditAction
+  beforeJson    Json?
+  afterJson     Json?
+  ip            String?
+  userAgent     String?
+  createdAt     DateTime    @default(now())
+
+  @@index([businessId, entityType, entityId])
+  @@index([actorUserId, createdAt])
+}
+
+model PasswordResetToken {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Expense {
+  id         String   @id @default(uuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id])
+  date       String
+  category   String
+  amount     Decimal  @db.Decimal(12, 2)
+  notes      String?
+  createdAt  DateTime @default(now())
+
+  @@index([businessId, date])
+}
