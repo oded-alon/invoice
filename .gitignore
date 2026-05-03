@@ -7,3 +7,9 @@ coverage
 .env.*
 !.env.example
 pnpm-lock.yaml
+package-lock.json
+*.tsbuildinfo
+apps/web/vite.config.js
+apps/web/vite.config.d.ts
+apps/web/src/App.js
+apps/web/src/main.js
