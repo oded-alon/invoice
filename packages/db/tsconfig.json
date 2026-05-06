@@ -5,6 +5,7 @@
     "rootDir": "src",
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
+    "types": ["node"],
     "declaration": true,
     "declarationMap": true
   },
