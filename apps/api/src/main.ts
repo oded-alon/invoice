@@ -50,7 +50,15 @@ const allowedOrigins = process.env.ALLOWED_ORIGIN
   : ["http://localhost:5173", "http://localhost:5174"];
 
 await app.register(cors, {
-  origin: allowedOrigins,
+  origin: (origin, cb) => {
+    // Allow requests with no origin (curl, Render health checks, same-origin)
+    if (!origin) return cb(null, true);
+    // Allow explicitly configured origins
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    // In development allow any localhost
+    if (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) return cb(null, true);
+    cb(new Error(`CORS: origin ${origin} not allowed`), false);
+  },
   credentials: true
 });
 
