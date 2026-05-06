@@ -46,7 +46,7 @@ async function resolvePort(preferredPort: number, host: string, attempts = 10) {
 }
 
 const allowedOrigins = process.env.ALLOWED_ORIGIN
-  ? process.env.ALLOWED_ORIGIN.split(",").map((s) => s.trim())
+  ? process.env.ALLOWED_ORIGIN.split(",").map((s) => s.trim().replace(/\/$/, ""))
   : ["http://localhost:5173", "http://localhost:5174"];
 
 await app.register(cors, {
