@@ -618,6 +618,13 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
     setError(null);
 
     try {
+      const checkJson = (res: Response, name: string) => {
+        const ct = res.headers.get("content-type") ?? "";
+        if (!ct.includes("application/json")) {
+          throw new Error(`כתובת ה-API שגויה — ${name} החזיר HTML במקום JSON. בדקו ש-VITE_API_URL מצביע על שירות ה-API ולא על האתר.`);
+        }
+      };
+
       const [customersResponse, draftsResponse, issuedResponse, businessSettingsResponse, expensesResponse] = await Promise.all([
         fetch(`${API_URL}/v1/customers`, { credentials: "include" }),
         fetch(`${API_URL}/v1/invoices/drafts`, { credentials: "include" }),
@@ -625,6 +632,11 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
         fetch(`${API_URL}/v1/business/settings`, { credentials: "include" }),
         fetch(`${API_URL}/v1/expenses`, { credentials: "include" }),
       ]);
+
+      checkJson(customersResponse, "customers");
+      checkJson(draftsResponse, "drafts");
+      checkJson(issuedResponse, "issued");
+      checkJson(businessSettingsResponse, "business/settings");
 
       if (!customersResponse.ok || !draftsResponse.ok || !issuedResponse.ok || !businessSettingsResponse.ok) {
         // If HTML is returned it means CORS is blocking or the API URL is wrong
