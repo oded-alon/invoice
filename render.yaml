@@ -27,7 +27,7 @@ services:
   - type: web
     name: invoice-web
     runtime: static
-    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @invoice/web run build
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @invoice/shared run build && pnpm --filter @invoice/web run build
     staticPublishPath: apps/web/dist
     envVars:
       - key: VITE_API_URL
