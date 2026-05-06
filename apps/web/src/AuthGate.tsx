@@ -147,7 +147,6 @@ function AuthScreen({ onAuth }: { onAuth: (user: AuthUser) => void }) {
 
     try {
       if (mode === "forgot") {
-        const res = await fetch(`${API_URL}/auth/forgot-password`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email })
@@ -175,12 +174,17 @@ function AuthScreen({ onAuth }: { onAuth: (user: AuthUser) => void }) {
         body: JSON.stringify(body)
       });
 
-      const data = (await res.json()) as AuthUser & { message?: string };
-      if (!res.ok) throw new Error(data.message ?? "שגיאה בהתחברות");
+      const text = await res.text();
+      const data = text ? (JSON.parse(text) as AuthUser & { message?: string }) : ({} as AuthUser & { message?: string });
+      if (!res.ok) throw new Error(data.message ?? `שגיאה בהתחברות (${res.status})`);
 
       onAuth(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "שגיאה לא צפויה");
+      if (err instanceof TypeError && err.message.toLowerCase().includes("fetch")) {
+        setError("לא ניתן להתחבר לשרת. בדקו שה-API פועל.");
+      } else {
+        setError(err instanceof Error ? err.message : "שגיאה לא צפויה");
+      }
     } finally {
       setLoading(false);
     }
