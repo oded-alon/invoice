@@ -89,7 +89,7 @@ for (const contentType of ["application/zip", "application/octet-stream", "appli
 
 // Global auth guard — skips routes with config.skipAuth = true
 app.addHook("onRequest", async (request, reply) => {
-  const cfg = (request.routeOptions?.config ?? {}) as Record<string, unknown>;
+  const cfg = (request.routeOptions?.config ?? {}) as unknown as Record<string, unknown>;
   if (cfg["skipAuth"]) return;
   try {
     await request.jwtVerify();

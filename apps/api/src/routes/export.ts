@@ -41,7 +41,7 @@ export async function registerExportRoutes(app: FastifyInstance) {
     // ── Customers CSV ─────────────────────────────────────────────────────────
     const customersCsv = toCsv(
       ["id", "displayNameHe", "legalNameHe", "type", "taxId", "email", "phone", "addressHe", "cityHe", "paymentTermsDays", "isActive", "createdAt"],
-      customers.map((c) => [
+      customers.map((c: (typeof customers)[number]) => [
         c.id, c.displayNameHe, c.legalNameHe ?? "", c.type,
         c.taxId ?? "", c.email ?? "", c.phone ?? "",
         c.addressHe ?? "", c.cityHe ?? "",
@@ -56,7 +56,7 @@ export async function registerExportRoutes(app: FastifyInstance) {
         "issueDate", "dueDate", "customerId", "currency",
         "subtotalAmount", "vatAmount", "totalAmount", "balanceDue",
         "paymentMethod", "notesHe", "linkedDocumentId", "issuedAt", "createdAt"],
-      invoices.map((inv) => [
+      invoices.map((inv: (typeof invoices)[number]) => [
         inv.id,
         inv.documentType,
         getDocumentTypeLabel(inv.documentType as DocumentType),
@@ -83,7 +83,7 @@ export async function registerExportRoutes(app: FastifyInstance) {
     const linesCsv = toCsv(
       ["invoiceId", "lineNo", "descriptionHe", "quantity", "unitPrice", "discountPct", "lineSubtotal", "vatRate", "lineVatAmount", "lineTotal"],
       invoices.flatMap((inv) =>
-        inv.lines.map((l) => [
+        inv.lines.map((l: (typeof inv.lines)[number]) => [
           inv.id,
           String(l.lineNo),
           l.descriptionHe,
@@ -101,7 +101,7 @@ export async function registerExportRoutes(app: FastifyInstance) {
     // ── Series CSV ────────────────────────────────────────────────────────────
     const seriesCsv = toCsv(
       ["documentType", "fiscalYear", "prefix", "startingNumber", "nextNumber"],
-      sequences.map((s) => [
+      sequences.map((s: (typeof sequences)[number]) => [
         s.documentType, String(s.fiscalYear), s.prefix,
         String(s.startingNumber), String(s.nextNumber)
       ])

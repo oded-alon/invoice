@@ -120,7 +120,7 @@ export function buildInvoiceHtml(invoice: InvoiceForExport): string {
   const googleFontName = fontFamily.split(",")[0].replace(/['"/]/g, "").trim().replace(/\s+/g, "+");
   const googleFontLink = googleFontName && googleFontName !== "Inter" && googleFontName !== "Arial"
     ? `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${googleFontName}:wght@400;600;700&display=swap" />`
-    : "";
+    : ("" as string);
 
   const prefix = invoice.seriesPrefix ?? "";
   const numberPart = invoice.sequenceNumber ? `${prefix}#${invoice.sequenceNumber}` : "טיוטה";

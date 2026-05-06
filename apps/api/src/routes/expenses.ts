@@ -21,7 +21,7 @@ export async function registerExpenseRoutes(app: FastifyInstance) {
     });
 
     return reply.send({
-      items: expenses.map((e) => ({
+      items: expenses.map((e: (typeof expenses)[number]) => ({
         id: e.id,
         date: e.date,
         category: e.category,
