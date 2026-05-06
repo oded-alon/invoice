@@ -82,7 +82,7 @@ export async function registerExportRoutes(app: FastifyInstance) {
     // ── Invoice Lines CSV ─────────────────────────────────────────────────────
     const linesCsv = toCsv(
       ["invoiceId", "lineNo", "descriptionHe", "quantity", "unitPrice", "discountPct", "lineSubtotal", "vatRate", "lineVatAmount", "lineTotal"],
-      invoices.flatMap((inv) =>
+      invoices.flatMap((inv: (typeof invoices)[number]) =>
         inv.lines.map((l: (typeof inv.lines)[number]) => [
           inv.id,
           String(l.lineNo),

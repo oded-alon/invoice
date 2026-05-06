@@ -117,7 +117,7 @@ export function buildInvoiceHtml(invoice: InvoiceForExport): string {
   const primaryColor = tpl?.primaryColor ?? "#0f172a";
   const primaryDark = tpl?.primaryColor ?? "#1e293b";
   const fontFamily = tpl?.fontFamily ?? "Inter, Arial, sans-serif";
-  const googleFontName = fontFamily.split(",")[0].replace(/['"/]/g, "").trim().replace(/\s+/g, "+");
+  const googleFontName = (fontFamily.split(",")[0] ?? "").replace(/['"]/g, "").trim().replace(/\s+/g, "+");
   const googleFontLink = googleFontName && googleFontName !== "Inter" && googleFontName !== "Arial"
     ? `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${googleFontName}:wght@400;600;700&display=swap" />`
     : ("" as string);
