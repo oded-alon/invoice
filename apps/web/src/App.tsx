@@ -627,6 +627,11 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
       ]);
 
       if (!customersResponse.ok || !draftsResponse.ok || !issuedResponse.ok || !businessSettingsResponse.ok) {
+        // If HTML is returned it means CORS is blocking or the API URL is wrong
+        const ct = customersResponse.headers.get("content-type") ?? "";
+        if (!ct.includes("application/json")) {
+          throw new Error(`שגיאת CORS או כתובת API שגויה (${customersResponse.status})`);
+        }
         throw new Error("טעינת הנתונים נכשלה");
       }
 
@@ -1401,7 +1406,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
         ) : null}
 
         {activeDrawer === "business" ? (
-          <aside className="fixed inset-y-0 right-0 z-50 flex w-full max-w-2xl flex-col overflow-hidden bg-white shadow-2xl dark:bg-slate-900">
+          <aside className="drawer-slide-in fixed inset-0 z-50 flex flex-col overflow-hidden bg-white shadow-2xl dark:bg-slate-900 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-full sm:max-w-2xl">
             <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5 py-4 dark:border-slate-700 dark:bg-slate-900">
               <div>
                 <h2 className="text-base font-semibold">הגדרות עסק</h2>
@@ -1779,7 +1784,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
         ) : null}
 
         {activeDrawer === "user" ? (
-          <aside className="fixed inset-y-0 right-0 z-50 flex w-full max-w-2xl flex-col overflow-hidden bg-white shadow-2xl dark:bg-slate-900">
+          <aside className="drawer-slide-in fixed inset-0 z-50 flex flex-col overflow-hidden bg-white shadow-2xl dark:bg-slate-900 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-full sm:max-w-2xl">
             <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5 py-4 dark:border-slate-700 dark:bg-slate-900">
               <div>
                 <h2 className="text-base font-semibold">הגדרות משתמש</h2>
@@ -1949,7 +1954,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
                   enterKeyHint="search"
                 />
               </div>
-              <div className="space-y-3">
+              <div className="max-h-[28rem] space-y-3 overflow-y-auto">
                 {loading ? <EmptyState text="טוען לקוחות..." /> : null}
                 {!loading && customers.length === 0 ? <EmptyState text="עדיין אין לקוחות. צרו את הלקוח הראשון." /> : null}
                 {!loading && customers.length > 0 && filteredCustomers.length === 0 ? <EmptyState text="לא נמצאו לקוחות." /> : null}
