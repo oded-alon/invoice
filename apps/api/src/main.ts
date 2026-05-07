@@ -58,6 +58,9 @@ await app.register(cors, {
     if (!origin) return cb(null, true);
     // Allow explicitly configured origins
     if (allowedOrigins.includes(origin)) return cb(null, true);
+    // Allow any onrender.com subdomain (combined service: browser sends Origin
+    // for module scripts even when same-origin due to crossorigin attribute)
+    if (/^https:\/\/[^.]+\.onrender\.com$/.test(origin)) return cb(null, true);
     // In development allow any localhost
     if (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) return cb(null, true);
     cb(new Error(`CORS: origin ${origin} not allowed`), false);
