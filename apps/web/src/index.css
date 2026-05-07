@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
+html, body, #root {
   overflow-x: hidden;
   /* Prevents fixed elements from being offset by horizontal page overflow */
 }

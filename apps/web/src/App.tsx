@@ -1894,7 +1894,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
           <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
         ) : null}
 
-        <section className="grid gap-5 xl:grid-cols-[1.1fr_1.4fr]">
+        <section className="grid min-w-0 gap-5 xl:grid-cols-[1.1fr_1.4fr]">
           <div className="order-last space-y-6 xl:order-first">
             <Panel title={editingCustomerId ? "עריכת לקוח" : "פתיחת לקוח חדש"} description={editingCustomerId ? "עדכן פרטי לקוח קיים." : "הזנה מהירה בעברית, עם שדות מינימליים להתחלה מהירה."} collapsible>
               <form className="grid gap-4" onSubmit={editingCustomerId ? handleCustomerUpdate : handleCustomerSubmit}>
@@ -2559,7 +2559,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
                   </datalist>
 
                   {invoiceForm.lines.map((line, index) => (
-                    <div key={index} className="grid gap-2 rounded-xl bg-slate-50 p-3 sm:grid-cols-[2fr_0.8fr_0.9fr_0.8fr_auto]">
+                    <div key={index} className="grid gap-2 rounded-xl bg-slate-50 p-3 md:grid-cols-[2fr_0.8fr_0.9fr_0.8fr_auto]">
                       <Field label="תיאור שירות / מוצר">
                         <input
                           className="input bg-white"
