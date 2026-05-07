@@ -141,10 +141,11 @@ if (existsSync(webDist)) {
     root: webDist,
     decorateReply: true,
     dotfiles: "deny",
-    index: false,
-    wildcard: false
+    index: ["index.html"],
+    wildcard: true   // serves existing files; missing files call callNotFound()
   });
-  // SPA fallback: serve index.html for any non-API route
+  // SPA fallback: @fastify/static calls callNotFound() for non-existent files
+  // (e.g. /dashboard). Serve index.html so React Router handles routing client-side.
   app.setNotFoundHandler(async (request, reply) => {
     const urlPath = request.url.split("?")[0] ?? "/";
     if (urlPath.startsWith("/v1/") || urlPath.startsWith("/auth/") || urlPath.startsWith("/health")) {
