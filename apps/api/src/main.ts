@@ -8,7 +8,6 @@ import fastifyStatic from "@fastify/static";
 import { existsSync } from "node:fs";
 import net from "node:net";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { registerCustomerRoutes } from "./routes/customers.js";
 import { registerDraftInvoiceRoutes } from "./routes/draft-invoices.js";
 import { registerBusinessSettingsRoutes } from "./routes/business-settings.js";
@@ -135,18 +134,20 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
 await prisma.$connect();
 
 // Serve built React app when dist exists (production / combined mode)
-const __apiDir = path.dirname(fileURLToPath(import.meta.url));
-const webDist = path.resolve(__apiDir, "../../..", "apps/web/dist");
+const webDist = path.resolve(process.cwd(), "apps/web/dist");
+app.log.info(`Static web dist path: ${webDist} — exists: ${existsSync(webDist)}`);
 if (existsSync(webDist)) {
   await app.register(fastifyStatic, {
     root: webDist,
-    wildcard: true,
     decorateReply: true,
-    dotfiles: "deny"
+    dotfiles: "deny",
+    index: false,
+    wildcard: false
   });
+  // SPA fallback: serve index.html for any non-API route
   app.setNotFoundHandler(async (request, reply) => {
     const urlPath = request.url.split("?")[0] ?? "/";
-    if (urlPath.startsWith("/v1/") || urlPath.startsWith("/auth/")) {
+    if (urlPath.startsWith("/v1/") || urlPath.startsWith("/auth/") || urlPath.startsWith("/health")) {
       return reply.status(404).send({ message: "Not found" });
     }
     return reply.sendFile("index.html");
