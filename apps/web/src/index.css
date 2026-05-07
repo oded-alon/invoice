@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  overflow-x: hidden;
+  /* Prevents fixed elements from being offset by horizontal page overflow */
+}
+
+@keyframes slide-in-from-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+.drawer-slide-in {
+  animation: slide-in-from-right 0.3s ease-out;
+}
+
 /* ─── Dark mode base overrides ───────────────────────────────────
    Placed in @layer base so Tailwind dark: utilities always win.   */
 @layer base {

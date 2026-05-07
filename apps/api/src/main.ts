@@ -4,7 +4,11 @@ import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
 import fastifyJwt from "@fastify/jwt";
 import fastifyCookie from "@fastify/cookie";
+import fastifyStatic from "@fastify/static";
+import { existsSync } from "node:fs";
 import net from "node:net";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { registerCustomerRoutes } from "./routes/customers.js";
 import { registerDraftInvoiceRoutes } from "./routes/draft-invoices.js";
 import { registerBusinessSettingsRoutes } from "./routes/business-settings.js";
@@ -87,10 +91,12 @@ for (const contentType of ["application/zip", "application/octet-stream", "appli
   app.addContentTypeParser(contentType, { parseAs: "buffer" }, (_req, body, done) => done(null, body));
 }
 
-// Global auth guard — skips routes with config.skipAuth = true
+// Global auth guard — only enforces JWT on /v1/* and /auth/* endpoints
 app.addHook("onRequest", async (request, reply) => {
   const cfg = (request.routeOptions?.config ?? {}) as unknown as Record<string, unknown>;
   if (cfg["skipAuth"]) return;
+  const urlPath = request.url.split("?")[0] ?? "/";
+  if (!urlPath.startsWith("/v1/") && !urlPath.startsWith("/auth/")) return;
   try {
     await request.jwtVerify();
   } catch {
@@ -127,6 +133,25 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
 }
 
 await prisma.$connect();
+
+// Serve built React app when dist exists (production / combined mode)
+const __apiDir = path.dirname(fileURLToPath(import.meta.url));
+const webDist = path.resolve(__apiDir, "../../..", "apps/web/dist");
+if (existsSync(webDist)) {
+  await app.register(fastifyStatic, {
+    root: webDist,
+    wildcard: true,
+    decorateReply: true,
+    dotfiles: "deny"
+  });
+  app.setNotFoundHandler(async (request, reply) => {
+    const urlPath = request.url.split("?")[0] ?? "/";
+    if (urlPath.startsWith("/v1/") || urlPath.startsWith("/auth/")) {
+      return reply.status(404).send({ message: "Not found" });
+    }
+    return reply.sendFile("index.html");
+  });
+}
 
 const host = "0.0.0.0";
 const preferredPort = Number(process.env.PORT ?? 4000);

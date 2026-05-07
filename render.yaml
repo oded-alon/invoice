@@ -1,5 +1,5 @@
 services:
-  # ── API (Node.js Web Service) ─────────────────────────────────────────────
+  # ── Combined API + Web (Node.js Web Service) ─────────────────────────────
   - type: web
     name: invoice-api
     runtime: node
@@ -7,6 +7,7 @@ services:
       pnpm install --frozen-lockfile &&
       pnpm --filter @invoice/db run build &&
       pnpm --filter @invoice/shared run build &&
+      pnpm --filter @invoice/web run build &&
       pnpm --filter @invoice/api run build
     startCommand: node apps/api/dist/main.js
     healthCheckPath: /health
@@ -19,19 +20,5 @@ services:
         sync: false          # min 32 chars, set in Render dashboard
       - key: RESEND_API_KEY
         sync: false          # from resend.com, set in Render dashboard
-      - key: ALLOWED_ORIGIN
-        sync: false          # comma-separated list, e.g. https://invoice-web.onrender.com
-
-  # ── Web (Static Site) ─────────────────────────────────────────────────────
-  - type: web
-    name: invoice-web
-    runtime: static
-    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @invoice/shared run build && pnpm --filter @invoice/web run build
-    staticPublishPath: apps/web/dist
-    envVars:
-      - key: VITE_API_URL
-        sync: false          # e.g. https://invoice-api.onrender.com
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+      - key: RESEND_FROM
+        sync: false          # e.g. noreply@yourdomain.com

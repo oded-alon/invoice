@@ -22,7 +22,7 @@ import {
   type UpdateBusinessSettingsInput
 } from "@invoice/shared";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+const API_URL = import.meta.env.VITE_API_URL ?? "";
 const currencyFormatter = new Intl.NumberFormat("he-IL", {
   style: "currency",
   currency: "ILS"
