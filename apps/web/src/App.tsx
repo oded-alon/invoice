@@ -1333,7 +1333,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
-      <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 md:px-10 md:py-8" style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}>
+      <div className="mx-auto max-w-7xl overflow-x-hidden px-3 py-4 sm:px-6 md:px-10 md:py-8" style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}>
         <header className="mb-4 rounded-[20px] bg-slate-900 p-4 text-white shadow-lg shadow-slate-200 sm:rounded-[28px] sm:p-5 md:p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="space-y-1.5">
@@ -1895,7 +1895,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
         ) : null}
 
         <section className="grid min-w-0 gap-5 xl:grid-cols-[1.1fr_1.4fr]">
-          <div className="order-last space-y-6 xl:order-first">
+          <div className="order-last min-w-0 space-y-6 xl:order-first">
             <Panel title={editingCustomerId ? "עריכת לקוח" : "פתיחת לקוח חדש"} description={editingCustomerId ? "עדכן פרטי לקוח קיים." : "הזנה מהירה בעברית, עם שדות מינימליים להתחלה מהירה."} collapsible>
               <form className="grid gap-4" onSubmit={editingCustomerId ? handleCustomerUpdate : handleCustomerSubmit}>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -2031,7 +2031,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
             </Panel>
           </div>
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             {selectedTab === "REPORTS" ? (
               <Panel title='דו"חות' description="ניתוח פיננסי מפורט של פעילות העסק.">
                 <ReportsPanel
