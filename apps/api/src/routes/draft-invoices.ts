@@ -4,17 +4,14 @@ import { DocumentType, PaymentMethod, getDocumentTypeLabel } from "@invoice/shar
 import { createCreditNote, createReturnNote, createDraftInvoice, getInvoiceForExport, issueDraftInvoice, listCustomers, listDraftInvoices, listIssuedInvoices } from "../data/prisma-store.js";
 import { buildInvoiceHtml } from "../lib/invoice-html.js";
 import puppeteerCore, { type Browser } from "puppeteer-core";
-import chromium from "@sparticuz/chromium-min";
-
-const CHROMIUM_REMOTE_URL =
-  "https://github.com/Sparticuz/chromium/releases/download/v137.0.0/chromium-v137.0.0-pack.tar";
+import chromium from "@sparticuz/chromium";
 
 let _browser: Browser | null = null;
 async function getBrowser(): Promise<Browser> {
   if (_browser && _browser.connected) return _browser;
   const isProd = process.env.NODE_ENV === "production";
   if (isProd) {
-    const executablePath = await chromium.executablePath(CHROMIUM_REMOTE_URL);
+    const executablePath = await chromium.executablePath();
     _browser = await puppeteerCore.launch({
       executablePath,
       args: chromium.args,

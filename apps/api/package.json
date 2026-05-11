@@ -21,7 +21,7 @@
     "@invoice/db": "workspace:*",
     "@invoice/shared": "workspace:*",
     "@prisma/client": "^5.20.0",
-    "@sparticuz/chromium-min": "^148.0.0",
+    "@sparticuz/chromium": "^148.0.0",
     "bcryptjs": "^3.0.3",
     "fastify": "^5.0.0",
     "fflate": "^0.8.2",

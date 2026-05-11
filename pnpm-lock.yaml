@@ -44,7 +44,7 @@ importers:
       '@prisma/client':
         specifier: ^5.20.0
         version: 5.22.0(prisma@5.22.0)
-      '@sparticuz/chromium-min':
+      '@sparticuz/chromium':
         specifier: ^148.0.0
         version: 148.0.0
       bcryptjs:
@@ -781,8 +781,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@sparticuz/chromium-min@148.0.0':
-    resolution: {integrity: sha512-3RW2gPJrOIutXdTtwLDuIFOZwKKq4YU2zwt73U75QmgYaDVSYfSC1xLksou71sAy1B/MgZhLSmU+wCZDLW4MFg==}
+  '@sparticuz/chromium@148.0.0':
+    resolution: {integrity: sha512-na5beDSZkrlcEWEMt+eHu4Xe+MLUgCtHBjHaXGsNaQu5tJWwXE+McxAcMtyumEM/JzXrxGpkO5vAPD9TWhil3g==}
     engines: {node: '>=22.17.0'}
 
   '@stablelib/base64@1.0.1':
@@ -2527,7 +2527,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.60.2':
     optional: true
 
-  '@sparticuz/chromium-min@148.0.0':
+  '@sparticuz/chromium@148.0.0':
     dependencies:
       tar-fs: 3.1.2
     transitivePeerDependencies:
