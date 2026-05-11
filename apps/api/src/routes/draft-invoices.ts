@@ -3,14 +3,29 @@ import type { Customer, DraftInvoice } from "@invoice/shared";
 import { DocumentType, PaymentMethod, getDocumentTypeLabel } from "@invoice/shared";
 import { createCreditNote, createReturnNote, createDraftInvoice, getInvoiceForExport, issueDraftInvoice, listCustomers, listDraftInvoices, listIssuedInvoices } from "../data/prisma-store.js";
 import { buildInvoiceHtml } from "../lib/invoice-html.js";
-import puppeteer, { type Browser } from "puppeteer";
+import puppeteerCore, { type Browser } from "puppeteer-core";
+import chromium from "@sparticuz/chromium-min";
+
+const CHROMIUM_REMOTE_URL =
+  "https://github.com/Sparticuz/chromium/releases/download/v137.0.0/chromium-v137.0.0-pack.tar";
 
 let _browser: Browser | null = null;
 async function getBrowser(): Promise<Browser> {
-  if (!_browser || !_browser.connected) {
-    _browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
+  if (_browser && _browser.connected) return _browser;
+  const isProd = process.env.NODE_ENV === "production";
+  if (isProd) {
+    const executablePath = await chromium.executablePath(CHROMIUM_REMOTE_URL);
+    _browser = await puppeteerCore.launch({
+      executablePath,
+      args: chromium.args,
+      headless: true,
     });
+  } else {
+    // Local dev: use system Chrome or puppeteer's bundled one
+    const localPuppeteer = await import("puppeteer");
+    _browser = await localPuppeteer.default.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+    }) as unknown as Browser;
   }
   return _browser;
 }
@@ -223,7 +238,7 @@ export async function registerDraftInvoiceRoutes(app: FastifyInstance) {
     const browser = await getBrowser();
     const page = await browser.newPage();
     try {
-      await page.setContent(html, { waitUntil: "networkidle0" });
+      await page.setContent(html, { waitUntil: "load" });
       const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
       reply
         .type("application/pdf")
