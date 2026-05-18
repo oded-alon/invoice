@@ -2619,7 +2619,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
             )}
 
             <Panel title="טיוטות אחרונות" description="תצוגה תפעולית מהירה של המסמכים שטרם הונפקו.">
-              <div className="space-y-3">
+              <div className="max-h-[28rem] space-y-3 overflow-y-auto">
                 {loading ? <EmptyState text="טוען טיוטות..." /> : null}
                 {!loading && filteredDraftInvoices.length === 0 ? <EmptyState text={`עדיין אין טיוטות ${selectedDocumentLabel}. צרו את הטיוטה הראשונה.`} /> : null}
                 {filteredDraftInvoices.map((invoice) => {
@@ -2728,6 +2728,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
                   </div>
                 </div>
 
+                <div className="max-h-[28rem] space-y-3 overflow-y-auto">
                 {loading ? <EmptyState text="טוען מסמכים שהונפקו..." /> : null}
                 {!loading && filteredIssuedByType.length === 0 ? (
                   <EmptyState text={`עדיין לא הונפקו ${selectedDocumentLabel}.`} />
@@ -2837,6 +2838,7 @@ function App({ user, onLogout }: { user: { displayName: string; email: string };
                     </button>
                   </div>
                 ) : null}
+                </div>{/* end scrollable list */}
               </div>
             </Panel>
 
